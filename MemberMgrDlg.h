@@ -4,6 +4,28 @@
 
 #pragma once
 
+class CMember {
+public:
+	CMember() {
+		TRACE("생성자\n");
+	}
+	~CMember() {
+		TRACE("소멸자\n");
+	}
+
+	CString m_strId;
+	CString m_strName;
+	int     m_nPostCode;
+	CString m_strAddress;
+	BOOL    m_bSex;
+	CString m_strPhone1;
+	CString m_strPhone2;
+	CString m_strPhone3;
+	int     m_nAge;
+	int		m_nHobby;
+};
+
+using CMemberPtr = shared_ptr<CMember>;
 
 // CMemberMgrDlg 대화 상자
 class CMemberMgrDlg : public CDialogEx
@@ -11,6 +33,8 @@ class CMemberMgrDlg : public CDialogEx
 // 생성입니다.
 public:
 	CMemberMgrDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+
+	vector<CMemberPtr> m_array;
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
@@ -37,10 +61,9 @@ public:
 	// 이름
 	CString m_strName;
 	// 우편번호
-	int m_intPostCode;
+	int m_nPostCode;
 	// 주소
-	CString m_strAdress;
-	afx_msg void OnBnClickedCheckMale();
+	CString m_strAddress;
 	BOOL m_bMale;
 	BOOL m_bFemale;
 	// 전화번호
@@ -48,10 +71,12 @@ public:
 	CString m_strPhone2;
 	CString m_strPhone3;
 	// 나이
-	int m_intAge;
-	int m_iHobby1;
+	int m_nAge;
+	int m_nHobby;
 
-	afx_msg void OnBnClickedRadioHobby1();
-	afx_msg void OnBnClickedOk();
 	afx_msg void OnBnClickedButtonNew();
+	afx_msg void OnBnClickedCheckMale();
+	CEdit m_wndId;
+	afx_msg void OnBnClickedBtnFind();
+	afx_msg void OnBnClickedBtnAdd();
 };

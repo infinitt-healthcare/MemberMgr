@@ -24,6 +24,8 @@
 #define IDC_RADIO_HOBBY5                1014
 #define IDC_BUTTON1                     1015
 #define IDC_BUTTON_NEW                  1015
+#define IDC_BTN_FIND                    1016
+#define IDC_BTN_ADD                     1017
 
 // Next default values for new objects
 // 

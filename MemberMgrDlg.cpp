@@ -57,15 +57,15 @@ CMemberMgrDlg::CMemberMgrDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_MEMBERMGR_DIALOG, pParent)
 	, m_strID(_T(""))
 	, m_strName(_T(""))
-	, m_intPostCode(0)
-	, m_strAdress(_T(""))
+	, m_nPostCode(0)
+	, m_strAddress(_T(""))
 	, m_bMale(FALSE)
 	, m_bFemale(FALSE)
 	, m_strPhone1(_T(""))
 	, m_strPhone2(_T(""))
 	, m_strPhone3(_T(""))
-	, m_intAge(0)
-	, m_iHobby1(0)
+	, m_nAge(0)
+	, m_nHobby(0)
 
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
@@ -76,16 +76,17 @@ void CMemberMgrDlg::DoDataExchange(CDataExchange* pDX)
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_EDIT_ID, m_strID);
 	DDX_Text(pDX, IDC_EDIT_NAME, m_strName);
-	DDX_Text(pDX, IDC_EDIT_POST_CODE, m_intPostCode);
-	DDX_Text(pDX, IDC_EDIT_ADRESS, m_strAdress);
+	DDX_Text(pDX, IDC_EDIT_POST_CODE, m_nPostCode);
+	DDX_Text(pDX, IDC_EDIT_ADRESS, m_strAddress);
 	DDX_Check(pDX, IDC_CHECK_MALE, m_bMale);
 	DDX_Check(pDX, IDC_CHECK_FEMALE, m_bFemale);
 	DDX_Text(pDX, IDC_EDIT_PHONE1, m_strPhone1);
 	DDX_Text(pDX, IDC_EDIT_PHONE2, m_strPhone2);
 	DDX_Text(pDX, IDC_EDIT_PHONE3, m_strPhone3);
-	DDX_Text(pDX, IDC_EDIT_AGE, m_intAge);
-	DDX_Radio(pDX, IDC_RADIO_HOBBY1, m_iHobby1);
+	DDX_Text(pDX, IDC_EDIT_AGE, m_nAge);
+	DDX_Radio(pDX, IDC_RADIO_HOBBY1, m_nHobby);
 
+	DDX_Control(pDX, IDC_EDIT_ID, m_wndId);
 }
 
 BEGIN_MESSAGE_MAP(CMemberMgrDlg, CDialogEx)
@@ -93,9 +94,9 @@ BEGIN_MESSAGE_MAP(CMemberMgrDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDC_CHECK_MALE, &CMemberMgrDlg::OnBnClickedCheckMale)
-	ON_BN_CLICKED(IDC_RADIO_HOBBY1, &CMemberMgrDlg::OnBnClickedRadioHobby1)
-	ON_BN_CLICKED(IDOK, &CMemberMgrDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON_NEW, &CMemberMgrDlg::OnBnClickedButtonNew)
+	ON_BN_CLICKED(IDC_BTN_FIND, &CMemberMgrDlg::OnBnClickedBtnFind)
+	ON_BN_CLICKED(IDC_BTN_ADD, &CMemberMgrDlg::OnBnClickedBtnAdd)
 END_MESSAGE_MAP()
 
 
@@ -191,42 +192,24 @@ void CMemberMgrDlg::OnBnClickedCheckMale()
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
-
-void CMemberMgrDlg::OnBnClickedRadioHobby1()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	UpdateData();
-
-	//CString strHobby = _T("");
-
-	switch (m_iHobby1)
-	{
-	case 0:
-		break;
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	case 4:
-		break;
-	}
-
-}
-
-
-void CMemberMgrDlg::OnBnClickedOk()
-{
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	CDialogEx::OnOK();
-}
-
-
 void CMemberMgrDlg::OnBnClickedButtonNew()
 {
-	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	m_strID = _T("");
+	m_strName = _T("");
+	m_nPostCode = 0;
+	m_strAddress = _T("");
+	m_bMale = FALSE;
+	m_bFemale = FALSE;
+	m_strPhone1 = _T("");
+	m_strPhone2 = _T("");
+	m_strPhone3 = _T("");
+	m_nAge = 0;
+	m_nHobby = 0;
 
+	UpdateData(FALSE);
+
+	m_wndId.EnableWindow(TRUE);
+	m_wndId.SetFocus();
 
 }
 
@@ -234,4 +217,90 @@ void CMemberMgrDlg::OnBnClickedButtonNew()
 void CAboutDlg::OnBnClickedButtonNew()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CMemberMgrDlg::OnBnClickedBtnFind()
+{
+	/*
+	1. 검색값을 입력받는다 
+	2. 검색값의 존재여부 확인 
+	3. 검색값으로 배열에서 찾는다 
+	4. 찾은 자료가 존재하면 화면에 출력한다
+	5. 찾은 자료가 존재하지 않은 경고 메시지 출력한다 
+	*/
+
+	//1. 검색값을 입력받는다
+	if (!UpdateData()) return;
+
+	//2. 검색값의 존재여부 확인
+	if (m_strID.IsEmpty()) {
+		AfxMessageBox(_T("찾고자 하는 아이디를 입력해주세요"));
+		m_wndId.EnableWindow(FALSE);
+		return;
+	}
+
+	//3. 검색값으로 배열에서 찾는다
+	for (const auto& pMember : m_array) {
+		if (pMember->m_strId == m_strID) {
+			
+			m_strID	= pMember->m_strId;
+			m_strName = pMember->m_strName;
+			m_nPostCode = pMember->m_nPostCode;
+			m_strAddress = pMember->m_strAddress;
+			m_bMale = pMember->m_bSex ;
+			m_bFemale = pMember->m_bSex == FALSE;
+			m_strPhone1 = pMember->m_strPhone1;
+			m_strPhone2 = pMember->m_strPhone2;
+			m_strPhone3 = pMember->m_strPhone3;
+			m_nAge = pMember->m_nAge;
+			m_nHobby = pMember->m_nHobby;
+
+			//4. 찾은 자료가 존재하면 화면에 출력한다
+			UpdateData(FALSE);
+			m_wndId.EnableWindow(FALSE);
+
+			return;
+		}
+	}
+
+	AfxMessageBox(_T("찾고하는 아이디가 존재하지 않습니다"));
+
+}
+
+
+void CMemberMgrDlg::OnBnClickedBtnAdd()
+{
+	/*1. UI에 입력된 값을 변수로 읽는다.
+	* 2. 입력된 값을 이용하여 Member 객체를 생성한다
+	* 3. 어디가 저장될 공간(1. vector, 2. map, 3.db) 에 저장한다
+	* 4. vector에 저장을 한다고 생각하고 어떤 객체를 저장할지?
+	* 5. 저장 방법 : 1. 객체 vector<CMember>
+	*				 2. 포인터 (동적객체) vector<CMember*>, 소멸자에서 객체 해제 반드시 할 것 
+	                 3. 스마트 포인터 vector<CMemberPtr>
+	*/
+
+	//1. UI에 입력된 값을 변수로 읽는다.
+	if (!UpdateData()) return;
+
+	//2. 입력된 값을 이용하여 Member 객체를 생성한다
+	CMemberPtr pMember = make_shared<CMember>();
+	
+	pMember->m_strId = m_strID;
+	pMember->m_strName = m_strName;
+	pMember->m_nPostCode = m_nPostCode;
+	pMember->m_strAddress = m_strAddress;
+	pMember->m_bSex = m_bMale ? TRUE : FALSE;
+	pMember->m_strPhone1 = m_strPhone1;
+	pMember->m_strPhone2 = m_strPhone2;
+	pMember->m_strPhone3 = m_strPhone3;
+	pMember->m_nAge = m_nAge;
+	pMember->m_nHobby = m_nHobby;
+
+	//3. 어디가 저장될 공간(1. vector, 2. map, 3.db) 에 저장한다
+	m_array.push_back(pMember);
+
+	AfxMessageBox(_T("고객정보가 등록되었습니다"));
+
+	OnBnClickedButtonNew();
 }
