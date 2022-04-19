@@ -97,6 +97,8 @@ BEGIN_MESSAGE_MAP(CMemberMgrDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BUTTON_NEW, &CMemberMgrDlg::OnBnClickedButtonNew)
 	ON_BN_CLICKED(IDC_BTN_FIND, &CMemberMgrDlg::OnBnClickedBtnFind)
 	ON_BN_CLICKED(IDC_BTN_ADD, &CMemberMgrDlg::OnBnClickedBtnAdd)
+	ON_BN_CLICKED(IDC_BTN_UPDATE, &CMemberMgrDlg::OnBnClickedBtnUpdate)
+	ON_BN_CLICKED(IDC_BTN_DELETE, &CMemberMgrDlg::OnBnClickedBtnDelete)
 END_MESSAGE_MAP()
 
 
@@ -236,11 +238,12 @@ void CMemberMgrDlg::OnBnClickedBtnFind()
 	//2. 검색값의 존재여부 확인
 	if (m_strID.IsEmpty()) {
 		AfxMessageBox(_T("찾고자 하는 아이디를 입력해주세요"));
-		m_wndId.EnableWindow(FALSE);
+		m_wndId.EnableWindow(TRUE);
 		return;
 	}
 
 	//3. 검색값으로 배열에서 찾는다
+	
 	for (const auto& pMember : m_array) {
 		if (pMember->m_strId == m_strID) {
 			
@@ -303,4 +306,104 @@ void CMemberMgrDlg::OnBnClickedBtnAdd()
 	AfxMessageBox(_T("고객정보가 등록되었습니다"));
 
 	OnBnClickedButtonNew();
+}
+
+
+void CMemberMgrDlg::OnBnClickedBtnUpdate()
+{
+	//1. UI에 입력된 값을 변수로 읽는다.
+	if (!UpdateData()) return;
+
+	CString& strId = m_strID;
+	auto& it = find_if(m_array.begin(), m_array.end(),
+		[strId](auto& pMember) -> int {return pMember->m_strId == strId; });
+	if (it != m_array.cend()) {
+		CMemberPtr pMember = *it;
+
+		pMember->m_strId = m_strID;
+		pMember->m_strName = m_strName;
+		pMember->m_nPostCode = m_nPostCode;
+		pMember->m_strAddress = m_strAddress;
+		pMember->m_bSex = m_bMale ? TRUE : FALSE;
+		pMember->m_strPhone1 = m_strPhone1;
+		pMember->m_strPhone2 = m_strPhone2;
+		pMember->m_strPhone3 = m_strPhone3;
+		pMember->m_nAge = m_nAge;
+		pMember->m_nHobby = m_nHobby;
+
+		AfxMessageBox(_T("수정되었습니다"));
+
+	}
+	else {
+		AfxMessageBox(_T("찾고하는 아이디가 존재하지 않습니다"));
+	}
+}
+
+void CMemberMgrDlg::OnBnClickedBtnDelete()
+{
+	//const auto& it = find_if(m_array.cbegin(), m_array.cend(), [this](const auto& pMember) -> int {return pMember->m_strId == m_strID; });
+	//if (it != m_array.end()) {
+	//	m_array.erase(it);
+	//}
+
+	/*
+	1. 검색값을 입력받는다
+	2. 검색값의 존재여부 확인
+	3. 검색값으로 배열에서 찾는다
+	4. 찾은 자료가 존재하면 삭제한다
+	5. 찾은 자료가 존재하지 않은 경고 메시지 출력한다
+	*/
+
+	//1. 검색값을 입력받는다
+	if (!UpdateData()) return;
+
+	//2. 검색값의 존재여부 확인
+	if (m_strID.IsEmpty()) {
+		AfxMessageBox(_T("찾고자 하는 아이디를 입력해주세요"));
+		m_wndId.EnableWindow(TRUE);
+		return;
+	}
+
+	//3. 검색값으로 배열에서 찾는다
+	//for (auto& it = m_array.cbegin(); it != m_array.cend();it++) {
+	//	//const auto& pMember = *it;
+	//	if ((*it)->m_strId == m_strID) {
+	//		//4. 찾은 자료가 존재하면 삭제한다 
+	//		m_array.erase(it);
+
+	//		OnBnClickedButtonNew();
+
+	//		AfxMessageBox(_T("자료를 찾아서 삭제했습니다"));
+
+	//		return;
+	//	}
+	//}
+	CString& strId = m_strID;
+	const auto& it = find_if(m_array.cbegin(), m_array.cend(), 
+		[strId](const auto& pMember) -> int {return pMember->m_strId == strId; });
+	if (it != m_array.cend()) {
+		OnBnClickedButtonNew();
+		AfxMessageBox(_T("자료를 찾아서 삭제했습니다"));
+		m_array.erase(it);
+	}
+	else {
+		AfxMessageBox(_T("찾고하는 아이디가 존재하지 않습니다"));
+	}
+
+	//람다 구문 
+	//[켑쳐구문](인자부분) -> {return xxx};
+	//auto func = [켑쳐구문](인자부분) -> {return xxx};
+
+//	int result = add(10, 20);
+
+	//
+	//auto add_function = [](int a, int b) -> int {return a + b; };
+	//result = add_function(10, 20);
+
+	//CMember member(_T("1234"));
+	//member.find(10, 20);
+	//member.find(20, 30);
+
+
+
 }

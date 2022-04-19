@@ -26,6 +26,9 @@
 #define IDC_BUTTON_NEW                  1015
 #define IDC_BTN_FIND                    1016
 #define IDC_BTN_ADD                     1017
+#define IDC_BTN_UPDATE                  1018
+#define IDC_BTN_ADD3                    1019
+#define IDC_BTN_DELETE                  1019
 
 // Next default values for new objects
 // 

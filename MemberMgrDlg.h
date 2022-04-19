@@ -6,9 +6,6 @@
 
 class CMember {
 public:
-	CMember() {
-		TRACE("생성자\n");
-	}
 	~CMember() {
 		TRACE("소멸자\n");
 	}
@@ -79,4 +76,6 @@ public:
 	CEdit m_wndId;
 	afx_msg void OnBnClickedBtnFind();
 	afx_msg void OnBnClickedBtnAdd();
+	afx_msg void OnBnClickedBtnUpdate();
+	afx_msg void OnBnClickedBtnDelete();
 };
